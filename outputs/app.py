@@ -19,82 +19,272 @@ st.set_page_config(
 
 
 # ============================================================
-# CUSTOM CSS
+# COLOR PALETTE (used for charts + theming)
+# ============================================================
+
+COLORFUL_SEQUENCE = [
+    "#6366f1", "#ec4899", "#f59e0b", "#10b981",
+    "#06b6d4", "#8b5cf6", "#ef4444", "#14b8a6",
+    "#f97316", "#3b82f6"
+]
+
+AQI_COLOR_SCALE = [
+    [0.00, "#22c55e"],
+    [0.20, "#eab308"],
+    [0.40, "#f97316"],
+    [0.60, "#ef4444"],
+    [0.80, "#a855f7"],
+    [1.00, "#111827"]
+]
+
+WARM_COOL_SCALE = ["#06b6d4", "#6366f1", "#ec4899", "#f97316", "#ef4444"]
+
+
+# ============================================================
+# CUSTOM CSS (UI REFRESH ONLY — no logic changed below)
 # ============================================================
 
 st.markdown("""
 <style>
 
+/* ---------- Global background (colourful animated) ---------- */
 .stApp {
-    background: linear-gradient(135deg, #eef7ff, #f8f9fc);
+    background: linear-gradient(-45deg, #ff6ec4, #7873f5, #4ade80, #38bdf8, #facc15, #f472b6, #ff6ec4);
+    background-size: 500% 500%;
+    animation: gradientShift 18s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .block-container {
-    padding-top: 1.5rem;
-    padding-bottom: 2rem;
+    background: rgba(248, 250, 252, 0.95);
+    border-radius: 28px;
+    margin-top: 14px;
+    box-shadow: 0px 20px 60px rgba(0,0,0,0.35);
 }
 
+.block-container {
+    padding-top: 1.2rem;
+    padding-bottom: 2.5rem;
+    padding-left: 2.2rem;
+    padding-right: 2.2rem;
+    max-width: 1300px;
+}
+
+/* ---------- Header (colourful animated gradient title) ---------- */
 .main-title {
-    font-size: 42px;
-    font-weight: 800;
+    font-size: 48px;
+    font-weight: 900;
     text-align: center;
-    color: #172033;
-    margin-bottom: 5px;
+    background: linear-gradient(90deg, #ec4899, #6366f1 25%, #06b6d4 50%, #10b981 75%, #f59e0b);
+    background-size: 300% 300%;
+    animation: titleShift 8s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+}
+
+@keyframes titleShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .sub-title {
     text-align: center;
-    font-size: 17px;
-    color: #667085;
-    margin-bottom: 25px;
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 28px;
+    font-weight: 600;
 }
 
+/* ---------- Cards ---------- */
 .card {
-    background: white;
+    background: rgba(255,255,255,0.9);
     padding: 20px;
-    border-radius: 18px;
-    box-shadow: 0px 4px 18px rgba(0,0,0,0.08);
+    border-radius: 20px;
+    box-shadow: 0px 8px 24px rgba(15,23,42,0.06);
+    border: 1px solid #eef1f6;
     margin-bottom: 18px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 12px 28px rgba(15,23,42,0.10);
 }
 
 .section-title {
-    font-size: 25px;
+    font-size: 24px;
     font-weight: 700;
-    color: #172033;
-    margin-top: 20px;
-    margin-bottom: 15px;
+    color: #0f172a;
+    margin-top: 26px;
+    margin-bottom: 14px;
+    border-left: 5px solid #ec4899;
+    padding-left: 12px;
+    background: linear-gradient(90deg, rgba(236,72,153,0.08), rgba(99,102,241,0.02));
+    border-radius: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 .explanation-box {
-    background: white;
+    background: rgba(255,255,255,0.95);
     padding: 22px;
-    border-radius: 18px;
-    box-shadow: 0px 4px 18px rgba(0,0,0,0.08);
+    border-radius: 20px;
+    box-shadow: 0px 8px 24px rgba(15,23,42,0.06);
+    border: 1px solid #eef1f6;
     margin-top: 15px;
 }
 
 .flow-box {
-    background: #f8fafc;
-    border-radius: 12px;
-    padding: 15px;
+    background: linear-gradient(135deg, #ede9fe, #fce7f3);
+    border-radius: 14px;
+    padding: 16px;
     text-align: center;
     border: 1px solid #e4e7ec;
-    margin: 7px;
+    margin: 8px 0;
+    font-weight: 600;
+    color: #1e293b;
 }
 
 .arrow {
     text-align: center;
-    font-size: 25px;
+    font-size: 22px;
     font-weight: bold;
+    color: #ec4899;
 }
 
 .risk-card {
     background: white;
     padding: 18px;
-    border-radius: 16px;
-    box-shadow: 0px 4px 18px rgba(0,0,0,0.08);
+    border-radius: 18px;
+    box-shadow: 0px 8px 24px rgba(15,23,42,0.06);
     text-align: center;
+    border: 1px solid #eef1f6;
 }
+
+/* ---------- Sidebar (colourful, titles in boxes) ---------- */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #4c1d95, #6d28d9, #db2777);
+}
+
+section[data-testid="stSidebar"] * {
+    color: #f8fafc !important;
+}
+
+/* Sidebar main title box */
+section[data-testid="stSidebar"] h1 {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 16px;
+    padding: 14px 12px;
+    text-align: center;
+    font-size: 22px;
+    box-shadow: 0px 6px 18px rgba(0,0,0,0.18);
+    margin-bottom: 10px;
+}
+
+/* Sidebar "Dashboard Controls" markdown heading box */
+section[data-testid="stSidebar"] h3 {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 14px;
+}
+
+/* Sidebar radio group container -> box */
+section[data-testid="stSidebar"] div[role="radiogroup"] {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    padding: 10px;
+}
+
+/* Each radio option -> its own mini box */
+section[data-testid="stSidebar"] div[role="radiogroup"] label {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 12px;
+    padding: 10px 12px !important;
+    margin-bottom: 8px !important;
+    width: 100%;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+section[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+    background: rgba(255,255,255,0.22);
+    transform: translateX(3px);
+}
+
+section[data-testid="stSidebar"] .stRadio > label {
+    font-weight: 700;
+}
+
+/* ---------- Metric styling ---------- */
+div[data-testid="stMetric"] {
+    background: linear-gradient(135deg, #ffffff, #f5f3ff);
+    border-radius: 16px;
+    padding: 14px 16px;
+    border: 1px solid #eef1f6;
+    box-shadow: 0px 4px 14px rgba(99,102,241,0.10);
+}
+
+/* ---------- Dataframe corners ---------- */
+div[data-testid="stDataFrame"] {
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 28px 0 14px 0;
+}
+
+/* ---------- Feature slide cards ---------- */
+.feature-card {
+    background: white;
+    border-radius: 20px;
+    padding: 22px;
+    border: 1px solid #eef1f6;
+    box-shadow: 0px 8px 24px rgba(15,23,42,0.07);
+    height: 100%;
+}
+
+.feature-card h4 {
+    margin-top: 0;
+    color: #0f172a;
+}
+
+.advisory-pill {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.pill-green { background: #dcfce7; color: #166534; }
+.pill-yellow { background: #fef9c3; color: #854d0e; }
+.pill-orange { background: #ffedd5; color: #9a3412; }
+.pill-red { background: #fee2e2; color: #991b1b; }
+.pill-purple { background: #f3e8ff; color: #6b21a8; }
+.pill-black { background: #e5e7eb; color: #111827; }
+
+.delta-up { color: #dc2626; font-weight: 700; }
+.delta-down { color: #16a34a; font-weight: 700; }
+.delta-flat { color: #64748b; font-weight: 700; }
 
 </style>
 """, unsafe_allow_html=True)
@@ -334,6 +524,7 @@ page = st.sidebar.radio(
         "📈 72-Hour Forecast",
         "🔎 Why Is AQI High?",
         "📊 Location Analysis",
+        "🚀 Smart Insights",
         "🤖 Model Information"
     ]
 )
@@ -592,13 +783,21 @@ if page == "🏠 Overview":
         x="timestamp",
         y="predicted_pm25",
         markers=True,
-        title="Predicted PM2.5"
+        title="Predicted PM2.5",
+        color_discrete_sequence=["#ec4899"]
+    )
+
+    fig.update_traces(
+        line=dict(width=3, color="#ec4899"),
+        marker=dict(size=6, color="#6366f1")
     )
 
     fig.update_layout(
         xaxis_title="Date & Time",
         yaxis_title="PM2.5 (µg/m³)",
-        hovermode="x unified"
+        hovermode="x unified",
+        plot_bgcolor="rgba(246,244,255,0.6)",
+        paper_bgcolor="rgba(0,0,0,0)"
     )
 
     st.plotly_chart(
@@ -782,14 +981,7 @@ elif page == "🗺️ Delhi AQI Map":
                 "lon": False
             },
 
-            color_continuous_scale=[
-                [0.00, "green"],
-                [0.20, "yellow"],
-                [0.40, "orange"],
-                [0.60, "red"],
-                [0.80, "purple"],
-                [1.00, "black"]
-            ],
+            color_continuous_scale=AQI_COLOR_SCALE,
 
             zoom=9.5,
 
@@ -962,11 +1154,19 @@ elif page == "📈 72-Hour Forecast":
         x="timestamp",
         y="predicted_pm25",
         markers=True,
-        title="🌫️ Predicted PM2.5"
+        title="🌫️ Predicted PM2.5",
+        color_discrete_sequence=["#06b6d4"]
+    )
+
+    fig1.update_traces(
+        line=dict(width=3, color="#06b6d4"),
+        marker=dict(size=6, color="#ec4899")
     )
 
     fig1.update_layout(
-        hovermode="x unified"
+        hovermode="x unified",
+        plot_bgcolor="rgba(240,249,255,0.6)",
+        paper_bgcolor="rgba(0,0,0,0)"
     )
 
     st.plotly_chart(
@@ -984,11 +1184,19 @@ elif page == "📈 72-Hour Forecast":
         x="timestamp",
         y="predicted_aqi",
         markers=True,
-        title="📊 Predicted AQI"
+        title="📊 Predicted AQI",
+        color_discrete_sequence=["#8b5cf6"]
+    )
+
+    fig2.update_traces(
+        line=dict(width=3, color="#8b5cf6"),
+        marker=dict(size=6, color="#f59e0b")
     )
 
     fig2.update_layout(
-        hovermode="x unified"
+        hovermode="x unified",
+        plot_bgcolor="rgba(250,245,255,0.6)",
+        paper_bgcolor="rgba(0,0,0,0)"
     )
 
     st.plotly_chart(
@@ -1019,7 +1227,15 @@ elif page == "📈 72-Hour Forecast":
         category_count,
         x="Category",
         y="Hours",
-        title="Number of Forecast Hours in Each AQI Category"
+        title="Number of Forecast Hours in Each AQI Category",
+        color="Category",
+        color_discrete_sequence=COLORFUL_SEQUENCE
+    )
+
+    fig3.update_layout(
+        plot_bgcolor="rgba(255,251,235,0.6)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        showlegend=False
     )
 
     st.plotly_chart(
@@ -1583,13 +1799,21 @@ elif page == "📊 Location Analysis":
             "📊 "
             + selected_location
             + " - Predicted AQI"
-        )
+        ),
+        color_discrete_sequence=["#f97316"]
+    )
+
+    fig_aqi.update_traces(
+        line=dict(width=3, color="#f97316"),
+        marker=dict(size=6, color="#6366f1")
     )
 
     fig_aqi.update_layout(
         xaxis_title="Date & Time",
         yaxis_title="Predicted AQI",
-        hovermode="x unified"
+        hovermode="x unified",
+        plot_bgcolor="rgba(255,247,237,0.6)",
+        paper_bgcolor="rgba(0,0,0,0)"
     )
 
     st.plotly_chart(
@@ -1611,13 +1835,21 @@ elif page == "📊 Location Analysis":
             "🌫️ "
             + selected_location
             + " - Predicted PM2.5"
-        )
+        ),
+        color_discrete_sequence=["#10b981"]
+    )
+
+    fig_pm.update_traces(
+        line=dict(width=3, color="#10b981"),
+        marker=dict(size=6, color="#ec4899")
     )
 
     fig_pm.update_layout(
         xaxis_title="Date & Time",
         yaxis_title="PM2.5 (µg/m³)",
-        hovermode="x unified"
+        hovermode="x unified",
+        plot_bgcolor="rgba(236,253,245,0.6)",
+        paper_bgcolor="rgba(0,0,0,0)"
     )
 
     st.plotly_chart(
@@ -1651,6 +1883,322 @@ elif page == "📊 Location Analysis":
         location_table,
         use_container_width=True,
         hide_index=True
+    )
+
+
+# ============================================================
+# SMART INSIGHTS (NEW EXTRA SLIDE — additive only, uses
+# existing loaded data; does not modify any prior logic)
+# ============================================================
+
+elif page == "🚀 Smart Insights":
+
+    st.markdown(
+        '<div class="section-title">🚀 Smart Insights & Advisory</div>',
+        unsafe_allow_html=True
+    )
+
+    current = forecast.iloc[0]
+    current_aqi = float(current["predicted_aqi"])
+    current_pm25 = float(current["predicted_pm25"])
+    current_category = current.get(
+        "aqi_category",
+        get_aqi_category(current_aqi)
+    )
+
+    pill_class_map = {
+        "green": "pill-green",
+        "yellow": "pill-yellow",
+        "orange": "pill-orange",
+        "red": "pill-red",
+        "purple": "pill-purple",
+        "black": "pill-black"
+    }
+
+    current_risk_color = get_risk_color(current_aqi)
+    pill_class = pill_class_map.get(current_risk_color, "pill-yellow")
+
+    # ------------------------------------------------------
+    # 1. HEALTH ADVISORY ENGINE
+    # ------------------------------------------------------
+
+    st.markdown("### 🩺 Health Advisory")
+
+    def get_health_advisory(aqi):
+
+        if aqi <= 50:
+            return [
+                "✅ Safe for outdoor activities and exercise.",
+                "✅ Windows can be kept open for ventilation."
+            ]
+        elif aqi <= 100:
+            return [
+                "🙂 Air quality is acceptable for most people.",
+                "⚠️ Unusually sensitive individuals should watch for symptoms."
+            ]
+        elif aqi <= 200:
+            return [
+                "😷 Sensitive groups (children, elderly, asthma/heart patients) "
+                "should reduce prolonged outdoor exertion.",
+                "🪟 Consider keeping windows closed during peak traffic hours."
+            ]
+        elif aqi <= 300:
+            return [
+                "😷 Wear an N95 mask outdoors.",
+                "🏃 Avoid outdoor exercise; shift workouts indoors.",
+                "🫁 Asthma/COPD patients should keep rescue medication handy."
+            ]
+        elif aqi <= 400:
+            return [
+                "🚫 Avoid all outdoor physical activity.",
+                "😷 N95/N99 mask mandatory outdoors.",
+                "🏫 Consider outdoor school activity suspension.",
+                "🌬️ Run air purifiers indoors if available."
+            ]
+        else:
+            return [
+                "🚨 SEVERE: Stay indoors as much as possible.",
+                "😷 N99 mask required for any outdoor exposure.",
+                "🏥 High risk for respiratory/cardiac patients — seek medical "
+                "advice if symptoms appear.",
+                "🏫 Recommend school closures / work-from-home advisories."
+            ]
+
+    st.markdown(
+        f'<span class="advisory-pill {pill_class}">'
+        f'{current_category.upper()} • AQI {current_aqi:.0f}</span>',
+        unsafe_allow_html=True
+    )
+
+    advisory_lines = get_health_advisory(current_aqi)
+
+    adv_col1, adv_col2 = st.columns(2)
+
+    for i, line in enumerate(advisory_lines):
+        target_col = adv_col1 if i % 2 == 0 else adv_col2
+        with target_col:
+            st.markdown(
+                f'<div class="feature-card">{line}</div>',
+                unsafe_allow_html=True
+            )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ------------------------------------------------------
+    # 2. TREND VS YESTERDAY
+    # ------------------------------------------------------
+
+    st.markdown("### 📉 Trend vs. Previous Reading")
+
+    trend_available = False
+
+    if main_data is not None and "timestamp" in main_data.columns:
+
+        hist = main_data.dropna(subset=["timestamp"]).copy()
+
+        if "pm2_5_ugm3" in hist.columns and len(hist) >= 2:
+
+            hist["pm2_5_ugm3"] = pd.to_numeric(
+                hist["pm2_5_ugm3"], errors="coerce"
+            )
+
+            hist = hist.dropna(subset=["pm2_5_ugm3"])
+
+            if len(hist) >= 2:
+
+                latest_val = float(hist.iloc[-1]["pm2_5_ugm3"])
+                prev_val = float(hist.iloc[-2]["pm2_5_ugm3"])
+                delta = latest_val - prev_val
+
+                trend_available = True
+
+    if trend_available:
+
+        t1, t2, t3 = st.columns(3)
+
+        with t1:
+            st.metric(
+                "Latest Recorded PM2.5",
+                f"{latest_val:.1f} µg/m³"
+            )
+
+        with t2:
+            st.metric(
+                "Previous Recorded PM2.5",
+                f"{prev_val:.1f} µg/m³"
+            )
+
+        with t3:
+            if delta > 0:
+                st.markdown(
+                    f'<div class="feature-card">Change<br>'
+                    f'<span class="delta-up">▲ {delta:.1f} µg/m³ (worse)</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+            elif delta < 0:
+                st.markdown(
+                    f'<div class="feature-card">Change<br>'
+                    f'<span class="delta-down">▼ {abs(delta):.1f} µg/m³ (better)</span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown(
+                    '<div class="feature-card">Change<br>'
+                    '<span class="delta-flat">● No change</span></div>',
+                    unsafe_allow_html=True
+                )
+
+    else:
+
+        st.info(
+            "Not enough historical PM2.5 records available to compute a trend."
+        )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ------------------------------------------------------
+    # 3. SOURCE ATTRIBUTION SNAPSHOT
+    # ------------------------------------------------------
+
+    st.markdown("### 🧪 Likely Contributing Factors (Snapshot)")
+
+    if main_data is not None and len(main_data.dropna(
+        subset=["timestamp"] if "timestamp" in main_data.columns else []
+    ) if "timestamp" in main_data.columns else main_data) > 0:
+
+        valid_data = (
+            main_data.dropna(subset=["timestamp"])
+            if "timestamp" in main_data.columns
+            else main_data
+        )
+
+        row = valid_data.iloc[-1]
+
+        def safe_val(col):
+            if col in row.index:
+                try:
+                    return float(row[col])
+                except Exception:
+                    return np.nan
+            return np.nan
+
+        wind_v = safe_val("wind_speed_10m_kmh")
+        boundary_v = safe_val("boundary_layer_height_m")
+        inversion_v = safe_val("inversion_strength_c")
+        fire_v = safe_val("upwind_stubble_fire_count")
+        humidity_v = safe_val("relative_humidity")
+
+        factor_names = []
+        factor_scores = []
+
+        if not np.isnan(wind_v):
+            factor_names.append("Low Wind Dispersion")
+            factor_scores.append(max(0, 10 - wind_v))
+
+        if not np.isnan(boundary_v):
+            factor_names.append("Low Boundary Layer")
+            factor_scores.append(max(0, (800 - boundary_v) / 100))
+
+        if not np.isnan(inversion_v):
+            factor_names.append("Temperature Inversion")
+            factor_scores.append(max(0, inversion_v))
+
+        if not np.isnan(fire_v):
+            factor_names.append("Stubble Fire Activity")
+            factor_scores.append(fire_v)
+
+        if not np.isnan(humidity_v):
+            factor_names.append("High Humidity / Haze")
+            factor_scores.append(max(0, (humidity_v - 50) / 10))
+
+        if len(factor_names) > 0:
+
+            factor_df = pd.DataFrame({
+                "Factor": factor_names,
+                "Relative Contribution Score": factor_scores
+            }).sort_values(
+                "Relative Contribution Score", ascending=True
+            )
+
+            fig_factors = px.bar(
+                factor_df,
+                x="Relative Contribution Score",
+                y="Factor",
+                orientation="h",
+                title="Estimated Relative Contribution (Illustrative)",
+                color="Factor",
+                color_discrete_sequence=COLORFUL_SEQUENCE
+            )
+
+            fig_factors.update_layout(
+                coloraxis_showscale=False,
+                showlegend=False,
+                plot_bgcolor="rgba(245,243,255,0.6)",
+                paper_bgcolor="rgba(0,0,0,0)"
+            )
+
+            st.plotly_chart(fig_factors, use_container_width=True)
+
+            st.caption(
+                "Scores are a simplified, rule-based estimate from the latest "
+                "available weather/fire readings — not a formal source-apportionment model."
+            )
+
+        else:
+
+            st.info("Not enough atmospheric variables available for this snapshot.")
+
+    else:
+
+        st.info("Historical dataset not available for source attribution.")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ------------------------------------------------------
+    # 4. DOWNLOADABLE ADVISORY REPORT
+    # ------------------------------------------------------
+
+    st.markdown("### 📄 Downloadable Public Advisory")
+
+    top_location_line = ""
+
+    if location_summary is not None and len(location_summary) > 0:
+        top_loc = location_summary.iloc[0]
+        top_location_line = (
+            f"Highest-Risk Location (Next 72h): {top_loc['location']} "
+            f"(Max AQI {top_loc['max_aqi']:.0f}, {top_loc['risk']})\n"
+        )
+
+    report_lines = [
+        "DELHI AIR INTELLIGENCE — PUBLIC ADVISORY BULLETIN",
+        "=" * 55,
+        f"Generated: {pd.Timestamp.now().strftime('%d %B %Y, %I:%M %p')}",
+        "",
+        f"Current Predicted AQI: {current_aqi:.0f} ({current_category})",
+        f"Current Predicted PM2.5: {current_pm25:.1f} µg/m³",
+        top_location_line,
+        "Health Advisory:",
+    ] + [f"  - {line}" for line in advisory_lines] + [
+        "",
+        "This bulletin is auto-generated from a 72-hour AI forecasting "
+        "system for Delhi NCR.",
+    ]
+
+    report_text = "\n".join(report_lines)
+
+    st.download_button(
+        label="⬇️ Download Advisory Bulletin (.txt)",
+        data=report_text,
+        file_name="delhi_air_advisory_bulletin.txt",
+        mime="text/plain"
+    )
+
+    st.text_area(
+        "Preview",
+        report_text,
+        height=220
     )
 
 
@@ -1854,7 +2402,15 @@ elif page == "🤖 Model Information":
                 x=importance_column,
                 y=feature_column,
                 orientation="h",
-                title="Top 15 Important Features"
+                title="Top 15 Important Features",
+                color=importance_column,
+                color_continuous_scale=WARM_COOL_SCALE
+            )
+
+            fig_imp.update_layout(
+                coloraxis_showscale=False,
+                plot_bgcolor="rgba(240,253,250,0.6)",
+                paper_bgcolor="rgba(0,0,0,0)"
             )
 
             st.plotly_chart(
